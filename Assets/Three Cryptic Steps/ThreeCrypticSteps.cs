@@ -176,19 +176,20 @@ public class ThreeCrypticSteps : MonoBehaviour {
         // Virtuallion
         solveMarker = UnityEngine.Random.Range(52, 87);
         var m = Bomb.GetSolvableModuleNames();
-        bool valid = true;
+        
         if (m.Count() == 101) {
+            int successCount = 0;
+
             for (int i = 0; i < virtualModules.Length; i++) {
-                if (m.Count(x => x.Contains(virtualModules[i])) == 0) {
-                    valid = false;
-                    break;
+                if (m.Count(x => x.Contains(virtualModules[i])) >= 1) {
+                    successCount++;
                 }
             }
-        }
 
-        if (valid == true) {
-            isVirtual = true;
-            Debug.LogFormat("[Three Cryptic Steps #{0}] Virtuallion detected.", moduleId);
+            if (successCount == 101) {
+                isVirtual = true;
+                Debug.LogFormat("[Three Cryptic Steps #{0}] Virtuallion detected.", moduleId);
+            }
         }
     }
 
