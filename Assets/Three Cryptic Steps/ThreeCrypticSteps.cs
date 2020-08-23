@@ -1553,6 +1553,10 @@ public class ThreeCrypticSteps : MonoBehaviour {
         return msg;
     }
 
+
+    // TP Support - Thanks to Fangy
+
+
     #pragma warning disable 414
     string TwitchHelpMessage = "Use !{0} press <key> at <time>. Possible keys are left and right. Press is optional."; //Stage 1 help message
     #pragma warning restore 414
