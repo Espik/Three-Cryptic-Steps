@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using KModkit;
 
@@ -18,6 +19,11 @@ public class ThreeCrypticSteps : MonoBehaviour {
     public Material[] KeyMaterials;
     public Color[] ScreenColors;
     public TextMesh[] NumberTexts;
+
+    //Stage 2 keys dictionary
+    private Dictionary<string, KMSelectable> keysDict = new Dictionary<string, KMSelectable>();
+    //Stage 3 keys dictionary
+    private Dictionary<string, KMSelectable> keyboardDict = new Dictionary<string, KMSelectable>();
 
     // Solving info
     private int stage = 1;
@@ -138,6 +144,63 @@ public class ThreeCrypticSteps : MonoBehaviour {
             int j = i;
             Keys[i].OnInteract += delegate () { KeyPressed(j); return false; };
         }
+                
+        keysDict = new Dictionary<string, KMSelectable>()
+        {
+            {"a1", Keys[0]},
+            {"b1", Keys[1]},
+            {"c1", Keys[2]},
+            {"d1", Keys[3]},
+            {"e1", Keys[4]},
+            {"a2", Keys[5]},
+            {"b2", Keys[6]},
+            {"c2", Keys[7]},
+            {"d2", Keys[8]},
+            {"e2", Keys[9]},
+            {"a3", Keys[10]},
+            {"b3", Keys[11]},
+            {"c3", Keys[12]},
+            {"d3", Keys[13]},
+            {"e3", Keys[14]},
+            {"a4", Keys[15]},
+            {"b4", Keys[16]},
+            {"c4", Keys[17]},
+            {"d4", Keys[18]},
+            {"e4", Keys[19]},
+            {"a5", Keys[20]},
+            {"b5", Keys[21]},
+            {"c5", Keys[22]},
+            {"d5", Keys[23]},
+            {"e5", Keys[24]}
+        };
+
+        keyboardDict = new Dictionary<string, KMSelectable>()
+        {
+            {"a", Keys[0]},
+            {"b", Keys[1]},
+            {"c", Keys[2]},
+            {"d", Keys[3]},
+            {"e", Keys[4]},
+            {"f", Keys[5]},
+            {"g", Keys[6]},
+            {"h", Keys[7]},
+            {"i", Keys[8]},
+            {"k", Keys[9]},
+            {"l", Keys[10]},
+            {"m", Keys[11]},
+            {"n", Keys[12]},
+            {"o", Keys[13]},
+            {"p", Keys[14]},
+            {"q", Keys[15]},
+            {"r", Keys[16]},
+            {"s", Keys[17]},
+            {"t", Keys[18]},
+            {"u", Keys[19]},
+            {"v", Keys[21]},
+            {"w", Keys[22]},
+            {"y", Keys[23]},
+        };
+
 	}
 
     // Gets information
@@ -804,6 +867,8 @@ public class ThreeCrypticSteps : MonoBehaviour {
 
     // Stage 1 Advance
     private IEnumerator StageOneAdvance() {
+        TwitchHelpMessage = "Toggle the cells using !{0} press <coordinate>. Coordinates are to be in the format of (A-E)(1-5). Press is optional."; //Stage 2 help message
+        
         ScreenText.text = "Let's";
         ScreenText.color = ScreenColors[5];
         Audio.PlaySoundAtTransform("TCS_Sound1", transform);
@@ -1395,6 +1460,8 @@ public class ThreeCrypticSteps : MonoBehaviour {
     
     // Stage 3 Start
     private IEnumerator StageThreeStart() {
+        TwitchHelpMessage = "Submit the password using !{0} submit <password>."; //Stage 3 help message
+
         yield return new WaitForSeconds(0.3f);
         ScreenText.color = ScreenColors[8];
         moduleStrikes = 0;
@@ -1484,5 +1551,62 @@ public class ThreeCrypticSteps : MonoBehaviour {
         }
 
         return msg;
+    }
+
+    #pragma warning disable 414
+    string TwitchHelpMessage = "Use !{0} press <key> at <time>. Possible keys are left and right. Press is optional."; //Stage 1 help message
+    #pragma warning restore 414
+    // Twitch Plays
+    IEnumerator ProcessTwitchCommand(string command)
+    {
+
+        command = command.ToLowerInvariant().Trim();
+        Match m; 
+        switch (stage) {
+            case 1:
+                KMSelectable button;
+                int commandSeconds;
+
+                m = Regex.Match(command, @"^(?:press\s*)?\s*(left|right)\s*(?:at|on)\s*([0-9]+:)?([0-9]+):([0-5][0-9])$");
+                if (!m.Success || m.Groups[2].Success && int.Parse(m.Groups[3].Value) > 59) //Invalid command or time format with hour while having > 59 minutes
+                    yield break;
+
+                yield return null;
+                commandSeconds = (!m.Groups[2].Success ? 0 : int.Parse(m.Groups[2].Value.Replace(":", ""))) * 3600 + int.Parse(m.Groups[3].Value) * 60 + int.Parse(m.Groups[4].Value);
+                button = m.Groups[1].Value == "left" ? Keys[11] : Keys[13];
+                while (Mathf.FloorToInt(Bomb.GetTime()) != commandSeconds) 
+                    yield return "trycancel Button wasn't pressed due to request to cancel.";
+                button.OnInteract();
+                yield break;
+
+            case 2:
+                //if (command == "adv") {StartCoroutine(StageTwoAdvance()); yield break;}; //testing code, or code that breaks the laws of mechanics
+                m = Regex.Match(command, @"^(?:press\s*)?(([a-e][1-5][ ,;]?)+)$");
+                if (!m.Success) 
+                    yield break;
+                string[] split = command.ToLowerInvariant().Split(new[] { ' ', ';', ',' }, StringSplitOptions.RemoveEmptyEntries);
+                yield return null;
+                for (int i = 0; i < split.Length; i++) {
+                    keysDict[split[i].ToString()].OnInteract();
+                    yield return new WaitForSeconds(0.1f);
+                }
+                yield break;
+            case 3:
+                m = Regex.Match(command, @"^(?:submit\s*)(\w+)$");
+                if (!m.Success) 
+                    yield break;
+                command = command.Replace("submit", "").Replace(" ", "");
+                for (int i = 0; i < command.Length; i++) {
+                    if (!keyboardDict.ContainsKey(command[i].ToString()))
+                        yield break;
+                }
+                yield return null;
+                for (int i = 0; i < command.Length; i++) {
+                    keyboardDict[command[i].ToString()].OnInteract();
+                    yield return new WaitForSeconds(0.1f);
+                }
+                Keys[24].OnInteract();
+                yield break;
+        }
     }
 }
