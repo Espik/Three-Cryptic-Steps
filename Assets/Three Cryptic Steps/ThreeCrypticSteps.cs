@@ -1309,6 +1309,23 @@ public class ThreeCrypticSteps : MonoBehaviour {
         else if (stage == 3 && isVirtual == true && shownPassword == false && 
             Bomb.GetSolvedModuleNames().Count() >= solveMarker)
                 StartCoroutine(ShowPasswordVideo());
+
+        for (int i = 0; i < 25; i++) {
+                string Color = Regex.Match(Keys[i].GetComponent<MeshRenderer>().material.ToString(), @"^([\w\-]+)").Value;
+            if (colorblindMode && stage == 2 && canPress) {
+                switch (Color) {
+                    case "RedMaterial":        KeyTexts[i].text = "R"; break;
+                    case "YellowMaterial":     KeyTexts[i].text = "Y"; break;
+                    case "GreenMaterial":      KeyTexts[i].text = "G"; break;
+                    case "CyanMaterial":       KeyTexts[i].text = "C"; break;
+                    case "BlueMaterial":       KeyTexts[i].text = "B"; break;
+                    case "MagentaMaterial":    KeyTexts[i].text = "M"; break;
+                }
+            }
+            else {
+                KeyTexts[i].text = "";
+            }
+        }
     }
 
     // Shows Password Video
@@ -1585,6 +1602,11 @@ public class ThreeCrypticSteps : MonoBehaviour {
 
             case 2:
                 //if (command == "adv") {StartCoroutine(StageTwoAdvance()); yield break;}; //testing code, or code that breaks the laws of mechanics
+                if (command == "colorblind") {
+                    yield return null;
+                    colorblindMode = true;
+                    yield break;
+                }
                 m = Regex.Match(command, @"^(?:press\s)?(([a-e][1-5][ ,;]?)+)$");
                 if (!m.Success) 
                     yield break;
