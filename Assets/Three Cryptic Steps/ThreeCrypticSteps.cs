@@ -144,7 +144,7 @@ public class ThreeCrypticSteps : MonoBehaviour {
             int j = i;
             Keys[i].OnInteract += delegate () { KeyPressed(j); return false; };
         }
-                
+
         keysDict = new Dictionary<string, KMSelectable>()
         {
             {"a1", Keys[0]},
@@ -201,7 +201,7 @@ public class ThreeCrypticSteps : MonoBehaviour {
             {"y", Keys[23]},
         };
 
-	}
+    }
 
     // Gets information
     private void Start() {
@@ -216,14 +216,13 @@ public class ThreeCrypticSteps : MonoBehaviour {
         for (int i = 0; i < hardNumbers.Length; i++) {
             if (Bomb.GetSerialNumberNumbers().Contains(hardNumbers[i])) validSerialNumbers[hardNumbers[i]] = true;
         }
-        
+
         // Old method - Required all numbers present of the serial number
         /*for (int i = 0; i < validSerialNumbers.Length; i++) {
             if (Bomb.GetSerialNumberNumbers().Contains(i)) {
                 validSerialNumbers[i] = true;
                 validSerialNumberCount++;
             }
-
             else
                 validSerialNumbers[i] = false;
         }*/
@@ -239,7 +238,7 @@ public class ThreeCrypticSteps : MonoBehaviour {
         // Virtuallion
         solveMarker = UnityEngine.Random.Range(52, 87);
         var m = Bomb.GetSolvableModuleNames();
-        
+
         if (m.Count() == 101) {
             int successCount = 0;
 
@@ -279,15 +278,15 @@ public class ThreeCrypticSteps : MonoBehaviour {
                         StartCoroutine(StageOneStrike());
                     }
                 }
-                
+
                 else {
                     // Right button
                     if (i == 13) {
                         Debug.LogFormat("[Three Cryptic Steps #{0}] The right button was pressed at {1}.", moduleId, Bomb.GetFormattedTime());
                         canPress = false;
-                        int value = (int) Bomb.GetTime() % 600;
+                        int value = (int)Bomb.GetTime() % 600;
                         bool valid = false;
-                        
+
                         for (int j = 0; j < validGreenNumbers.Length; j++) {
                             if (validGreenNumbers[j] == value) {
                                 valid = true;
@@ -306,7 +305,7 @@ public class ThreeCrypticSteps : MonoBehaviour {
                     else if (i == 11) {
                         Debug.LogFormat("[Three Cryptic Steps #{0}] The left button was pressed at {1}.", moduleId, Bomb.GetFormattedTime());
                         canPress = false;
-                        int value = (int) Bomb.GetTime() % 600;
+                        int value = (int)Bomb.GetTime() % 600;
                         bool valid = false;
 
                         for (int j = 0; j < validRedNumbers.Length; j++) {
@@ -507,7 +506,7 @@ public class ThreeCrypticSteps : MonoBehaviour {
                     if (colorblindMode == true) KeyTexts[i - 4].text = colorblindLetters[keyState[i - 4]];
                 }
 
-                if(i % 5 != 0) { // Left
+                if (i % 5 != 0) { // Left
                     keyState[i - 1]++;
                     keyState[i - 1] %= 6;
                     KeyModels[i - 1].material = KeyMaterials[keyState[i - 1]];
@@ -868,7 +867,7 @@ public class ThreeCrypticSteps : MonoBehaviour {
     // Stage 1 Advance
     private IEnumerator StageOneAdvance() {
         TwitchHelpMessage = "Toggle the cells using !{0} press <coordinate>. Coordinates are to be in the format of (A-E)(1-5). Press is optional."; //Stage 2 help message
-        
+
         ScreenText.text = "Let's";
         ScreenText.color = ScreenColors[5];
         Audio.PlaySoundAtTransform("TCS_Sound1", transform);
@@ -1300,15 +1299,32 @@ public class ThreeCrypticSteps : MonoBehaviour {
                 else
                     canPress = true;
             }
-            
-            else 
+
+            else
                 canPress = true;
         }
 
         // Shows the video with the secret password
-        else if (stage == 3 && isVirtual == true && shownPassword == false && 
+        else if (stage == 3 && isVirtual == true && shownPassword == false &&
             Bomb.GetSolvedModuleNames().Count() >= solveMarker)
-                StartCoroutine(ShowPasswordVideo());
+            StartCoroutine(ShowPasswordVideo());
+
+        for (int i = 0; i < 25; i++) {
+            string Color = Regex.Match(Keys[i].GetComponent<MeshRenderer>().material.ToString(), @"^([\w\-]+)").Value;
+            if (colorblindMode && stage == 2 && canPress) {
+                switch (Color) {
+                case "RedMaterial": KeyTexts[i].text = "R"; break;
+                case "YellowMaterial": KeyTexts[i].text = "Y"; break;
+                case "GreenMaterial": KeyTexts[i].text = "G"; break;
+                case "CyanMaterial": KeyTexts[i].text = "C"; break;
+                case "BlueMaterial": KeyTexts[i].text = "B"; break;
+                case "MagentaMaterial": KeyTexts[i].text = "M"; break;
+                }
+            }
+            else {
+                KeyTexts[i].text = "";
+            }
+        }
     }
 
     // Shows Password Video
@@ -1457,7 +1473,7 @@ public class ThreeCrypticSteps : MonoBehaviour {
         }
     }
 
-    
+
     // Stage 3 Start
     private IEnumerator StageThreeStart() {
         TwitchHelpMessage = "Submit the password using !{0} submit <password>."; //Stage 3 help message
@@ -1557,60 +1573,64 @@ public class ThreeCrypticSteps : MonoBehaviour {
     // TP Support - Thanks to Fangy
 
 
-    #pragma warning disable 414
+#pragma warning disable 414
     string TwitchHelpMessage = "Use !{0} press <key> at <time>. Possible keys are left and right. Press is optional."; //Stage 1 help message
-    #pragma warning restore 414
+#pragma warning restore 414
     // Twitch Plays
-    IEnumerator ProcessTwitchCommand(string command)
-    {
+    IEnumerator ProcessTwitchCommand(string command) {
 
         command = command.ToLowerInvariant().Trim();
-        Match m; 
+        Match m;
         switch (stage) {
-            case 1:
-                KMSelectable button;
-                int commandSeconds;
+        case 1:
+        KMSelectable button;
+        int commandSeconds;
 
-                m = Regex.Match(command, @"^(?:press\s*)?\s*(left|right)\s*(?:at|on)\s*([0-9]+:)?([0-9]+):([0-5][0-9])$");
-                if (!m.Success || m.Groups[2].Success && int.Parse(m.Groups[3].Value) > 59) //Invalid command or time format with hour while having > 59 minutes
-                    yield break;
+        m = Regex.Match(command, @"^(?:press\s*)?\s*(left|right)\s*(?:at|on)\s*([0-9]+:)?([0-9]+):([0-5][0-9])$");
+        if (!m.Success || m.Groups[2].Success && int.Parse(m.Groups[3].Value) > 59) //Invalid command or time format with hour while having > 59 minutes
+            yield break;
 
-                yield return null;
-                commandSeconds = (!m.Groups[2].Success ? 0 : int.Parse(m.Groups[2].Value.Replace(":", ""))) * 3600 + int.Parse(m.Groups[3].Value) * 60 + int.Parse(m.Groups[4].Value);
-                button = m.Groups[1].Value == "left" ? Keys[11] : Keys[13];
-                while (Mathf.FloorToInt(Bomb.GetTime()) != commandSeconds) 
-                    yield return "trycancel Button wasn't pressed due to request to cancel.";
-                button.OnInteract();
-                yield break;
+        yield return null;
+        commandSeconds = (!m.Groups[2].Success ? 0 : int.Parse(m.Groups[2].Value.Replace(":", ""))) * 3600 + int.Parse(m.Groups[3].Value) * 60 + int.Parse(m.Groups[4].Value);
+        button = m.Groups[1].Value == "left" ? Keys[11] : Keys[13];
+        while (Mathf.FloorToInt(Bomb.GetTime()) != commandSeconds)
+            yield return "trycancel Button wasn't pressed due to request to cancel.";
+        button.OnInteract();
+        yield break;
 
-            case 2:
-                //if (command == "adv") {StartCoroutine(StageTwoAdvance()); yield break;}; //testing code, or code that breaks the laws of mechanics
-                m = Regex.Match(command, @"^(?:press\s)?(([a-e][1-5][ ,;]?)+)$");
-                if (!m.Success) 
-                    yield break;
-                string[] split = command.Replace("press ", "").ToLowerInvariant().Split(new[] { ' ', ';', ',' }, StringSplitOptions.RemoveEmptyEntries);
-                yield return null;
-                for (int i = 0; i < split.Length; i++) {
-                    keysDict[split[i].ToString()].OnInteract();
-                    yield return new WaitForSeconds(0.1f);
-                }
+        case 2:
+        //if (command == "adv") {StartCoroutine(StageTwoAdvance()); yield break;}; //testing code, or code that breaks the laws of mechanics
+        if (command == "colorblind") {
+            yield return null;
+            colorblindMode = true;
+            yield break;
+        }
+        m = Regex.Match(command, @"^(?:press\s)?(([a-e][1-5][ ,;]?)+)$");
+        if (!m.Success)
+            yield break;
+        string[] split = command.Replace("press ", "").ToLowerInvariant().Split(new[] { ' ', ';', ',' }, StringSplitOptions.RemoveEmptyEntries);
+        yield return null;
+        for (int i = 0; i < split.Length; i++) {
+            keysDict[split[i].ToString()].OnInteract();
+            yield return new WaitForSeconds(0.1f);
+        }
+        yield break;
+        case 3:
+        m = Regex.Match(command, @"^(?:submit\s*)(\w+)$");
+        if (!m.Success)
+            yield break;
+        command = command.Replace("submit", "").Replace(" ", "");
+        for (int i = 0; i < command.Length; i++) {
+            if (!keyboardDict.ContainsKey(command[i].ToString()))
                 yield break;
-            case 3:
-                m = Regex.Match(command, @"^(?:submit\s*)(\w+)$");
-                if (!m.Success) 
-                    yield break;
-                command = command.Replace("submit", "").Replace(" ", "");
-                for (int i = 0; i < command.Length; i++) {
-                    if (!keyboardDict.ContainsKey(command[i].ToString()))
-                        yield break;
-                }
-                yield return null;
-                for (int i = 0; i < command.Length; i++) {
-                    keyboardDict[command[i].ToString()].OnInteract();
-                    yield return new WaitForSeconds(0.1f);
-                }
-                Keys[24].OnInteract();
-                yield break;
+        }
+        yield return null;
+        for (int i = 0; i < command.Length; i++) {
+            keyboardDict[command[i].ToString()].OnInteract();
+            yield return new WaitForSeconds(0.1f);
+        }
+        Keys[24].OnInteract();
+        yield break;
         }
     }
 }
