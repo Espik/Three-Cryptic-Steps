@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using KModkit;
@@ -123,18 +124,6 @@ public class ThreeCrypticSteps : MonoBehaviour {
     private bool colorblindMode = false;
     private readonly string[] colorblindLetters = { "R", "Y", "G", "C", "B", "M" };
 
-    // Virtuallion Modules
-    private readonly string[] virtualModules = { "...?", "1000 Words", "Adventure Game", "Alphabet", "A Mistake", "Anagrams", "Arrow Talk", "Bamboozled Again", "Binary",
-        "Bone Apple Tea", "Boolean Venn Diagram", "Broken Buttons", "The Bulb", "The Button", "Button Sequence", "The Clock", "Colored Squares", "Color Generator", "Complex Keypad",
-        "Complicated Wires", "Countdown", "Crazy Talk", "Creation", "Digital Cipher", "Digital Root", "Directional Button", "Double Color", "Double-Oh", "Encrypted Dice", "Extended Password",
-        "Follow the Leader", "Foreign Exchange Rates", "Forget Me Not", "The Gamepad", "Gatekeeper", "Green Arrows", "Grid Matching", "The iPhone", "The Jack-O'-Lantern", "Keypad",
-        "The Labyrinth", "Lasers", "Letter Keys", "Light Cycle", "Lucky Dice", "Mashematics", "Mastermind Simple", "Maze", "Maze Scrambler", "Memory", "Microcontroller", "Modulo",
-        "Monsplode, Fight!", "Morse Code", "Not the Button", "Not Complicated Wires", "Not Keypad", "Not Maze", "Not Memory", "Not Who's on First", "The Number Cipher", "Orange Arrows",
-        "Password", "Piano Keys", "Pictionary", "The Plunger Button", "Poetry", "Poker", "Prime Checker", "Red Arrows", "Resistors", "Rock-Paper-Scissors-L.-Sp.", "Round Keypad",
-        "The Rule", "The Screw", "S.E.T.", "Simon Says", "Simon Scrambles", "Simon States", "Sink", "Souvenir", "Square Button", "Switches", "Symbolic Coordinates", "Synonyms",
-        "Tasha Squeals", "Text Field", "Three Cryptic Steps", "Tic Tac Toe", "Timezone", "Two Bits", "Uncolored Squares", "Unrelated Anagrams", "USA Maze", "Visual Impairment",
-        "Who's on First", "Wire Placement", "Wires", "Wire Sequence", "Word Scramble", "Yahtzee" };
-
 
     // Ran as bomb loads
     private void Awake() {
@@ -238,22 +227,18 @@ public class ThreeCrypticSteps : MonoBehaviour {
 
         // Virtuallion
         solveMarker = UnityEngine.Random.Range(52, 87);
-        var m = Bomb.GetSolvableModuleNames();
-        
-        if (m.Count() == 101) {
-            int successCount = 0;
 
-            for (int i = 0; i < virtualModules.Length; i++) {
-                if (m.Count(x => x.Contains(virtualModules[i])) >= 1) {
-                    successCount++;
-                }
-            }
-
-            if (successCount == 101) {
+        try {
+            Component gameplayState = GameObject.Find("GameplayState(Clone)").GetComponent("GameplayState");
+            Type type = gameplayState.GetType();
+            FieldInfo fieldMission = type.GetField("MissionToLoad", BindingFlags.Public | BindingFlags.Static);
+            if (fieldMission.GetValue(gameplayState).ToString().Equals("mod_espiks_missions_virtual")) {
                 isVirtual = true;
                 Debug.LogFormat("[Three Cryptic Steps #{0}] Virtuallion detected.", moduleId);
             }
         }
+
+        catch (NullReferenceException) {}
     }
 
 
@@ -641,8 +626,7 @@ public class ThreeCrypticSteps : MonoBehaviour {
     private void Submit() {
         Debug.LogFormat("[Three Cryptic Steps #{0}] You submitted: {1}", moduleId, enteredText);
 
-        if (Bomb.GetSolvedModuleNames().Count() != 0)
-            lastSolvedModule = Bomb.GetSolvedModuleNames().Last();
+        lastSolvedModule = GetLastModule();
 
         Debug.LogFormat("[Three Cryptic Steps #{0}] The solved module that comes last in alphabetical order is: {1}", moduleId, lastSolvedModule);
 
@@ -694,6 +678,18 @@ public class ThreeCrypticSteps : MonoBehaviour {
             ScreenText.text = "Solved!";
         }
     }
+
+    // Gets the last solved module in alphabetical order
+    private string GetLastModule() {
+        if (Bomb.GetSolvedModuleNames().Count() == 0)
+            return "Undefined";
+
+        // https://stackoverflow.com/questions/6965337/sort-a-list-alphabetically
+        var sortedList = Bomb.GetSolvedModuleNames().OrderBy(x => x).ToList();
+
+        return sortedList.Last();
+    }
+
 
     // Modifies the module name
     private string FixModuleName(string name) {
@@ -843,9 +839,10 @@ public class ThreeCrypticSteps : MonoBehaviour {
         GetComponent<KMBombModule>().HandleStrike();
         ScreenText.text = "WRONG!";
         ScreenText.color = ScreenColors[0];
+        yield return new WaitForSeconds(0.3f);
 
         if (moduleStrikes == 3) {
-            yield return new WaitForSeconds(0.7f);
+            yield return new WaitForSeconds(0.4f);
             ScreenText.text = "LFA";
             ScreenText.color = ScreenColors[1];
 
@@ -1011,9 +1008,10 @@ public class ThreeCrypticSteps : MonoBehaviour {
         Debug.LogFormat("[Three Cryptic Steps #{0}] Invalid button press for step one! Strike received!", moduleId);
         GetComponent<KMBombModule>().HandleStrike();
         moduleStrikes++;
+        yield return new WaitForSeconds(0.3f);
 
         if (moduleStrikes == 3) {
-            yield return new WaitForSeconds(0.7f);
+            yield return new WaitForSeconds(0.4f);
             ScreenText.text = "%10'-4\"!32'";
             ScreenText.color = ScreenColors[1];
         }
@@ -1322,9 +1320,6 @@ public class ThreeCrypticSteps : MonoBehaviour {
                     case "MagentaMaterial":    KeyTexts[i].text = "M"; break;
                 }
             }
-            else {
-                KeyTexts[i].text = "";
-            }
         }
     }
 
@@ -1479,6 +1474,7 @@ public class ThreeCrypticSteps : MonoBehaviour {
     private IEnumerator StageThreeStart() {
         TwitchHelpMessage = "Submit the password using !{0} submit <password>."; //Stage 3 help message
 
+        stage = 3;
         yield return new WaitForSeconds(0.3f);
         ScreenText.color = ScreenColors[8];
         moduleStrikes = 0;
@@ -1543,7 +1539,6 @@ public class ThreeCrypticSteps : MonoBehaviour {
 
         yield return new WaitForSeconds(0.3f);
         Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
-        stage = 3;
         canPress = true;
     }
 
@@ -1601,7 +1596,7 @@ public class ThreeCrypticSteps : MonoBehaviour {
                 yield break;
 
             case 2:
-                //if (command == "adv") {StartCoroutine(StageTwoAdvance()); yield break;}; //testing code, or code that breaks the laws of mechanics
+                if (command == "adv") {StartCoroutine(StageTwoAdvance()); yield break;}; //testing code, or code that breaks the laws of mechanics
                 if (command == "colorblind") {
                     yield return null;
                     colorblindMode = true;
