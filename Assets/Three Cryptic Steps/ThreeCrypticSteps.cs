@@ -1585,10 +1585,10 @@ public class ThreeCrypticSteps : MonoBehaviour {
 
             case 2:
                 //if (command == "adv") {StartCoroutine(StageTwoAdvance()); yield break;}; //testing code, or code that breaks the laws of mechanics
-                m = Regex.Match(command, @"^(?:press\s*)?(([a-e][1-5][ ,;]?)+)$");
+                m = Regex.Match(command, @"^(?:press\s)?(([a-e][1-5][ ,;]?)+)$");
                 if (!m.Success) 
                     yield break;
-                string[] split = command.ToLowerInvariant().Split(new[] { ' ', ';', ',' }, StringSplitOptions.RemoveEmptyEntries);
+                string[] split = command.Replace("press ", "").ToLowerInvariant().Split(new[] { ' ', ';', ',' }, StringSplitOptions.RemoveEmptyEntries);
                 yield return null;
                 for (int i = 0; i < split.Length; i++) {
                     keysDict[split[i].ToString()].OnInteract();
