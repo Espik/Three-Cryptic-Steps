@@ -14,7 +14,7 @@ MonoBehaviour:
   id: ThreeCrypticSteps
   title: Three Cryptic Steps
   author: Espik
-  description: 'Three Cryptic Steps v1.2
+  description: 'Three Cryptic Steps v1.201
 
     "When solving modules isn''t as easy as 1, 2, 3."
 
@@ -29,6 +29,6 @@ MonoBehaviour:
 
 
     Source Code: https://github.com/Espik/Three-Cryptic-Steps'
-  version: v1.2
+  version: v1.201
   outputFolder: build
   previewImage: {fileID: 2800000, guid: 5d59d0ae32a1be54eb69e9915e4e2993, type: 3}
