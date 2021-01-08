@@ -864,7 +864,7 @@ public class ThreeCrypticSteps : MonoBehaviour {
 
     // Stage 1 Advance
     private IEnumerator StageOneAdvance() {
-        TwitchHelpMessage = "Toggle the cells using !{0} press <coordinate>. Coordinates are to be in the format of (A-E)(1-5). Press is optional."; //Stage 2 help message
+        TwitchHelpMessage = "Toggle the cells using !{0} press <coordinate>. Coordinates are to be in the format of (A-E)(1-5). Press is optional. !{0} colorblind for Colorblind Mode."; //Stage 2 help message
         
         ScreenText.text = "Let's";
         ScreenText.color = ScreenColors[5];
@@ -1615,7 +1615,7 @@ public class ThreeCrypticSteps : MonoBehaviour {
                 }
                 yield break;
             case 3:
-                m = Regex.Match(command, @"^(?:submit\s*)(\w+)$");
+                m = Regex.Match(command, @"^(?:submit\s*)(\w+)?$");
                 if (!m.Success) 
                     yield break;
                 command = command.Replace("submit", "").Replace(" ", "");
