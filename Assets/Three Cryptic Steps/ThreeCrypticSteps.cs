@@ -43,20 +43,9 @@ public class ThreeCrypticSteps : MonoBehaviour {
     private int presentColors = 0;
     private bool positionChecked = true;
 
-    private bool allowTenMinCheck = true;
-
     private string enteredText = "";
     private string submitText = "";
     private int enteredLength = 0;
-
-    private bool enteredPassword = false;
-    private bool enteredOutburst = false;
-    private bool enteredBasketball = false;
-    private bool enteredSandwhich = false;
-
-    private int solveMarker = 52;
-    private bool isVirtual = false;
-    private bool shownPassword = false;
 
     private string lastSolvedModule = "Undefined";
     private int serialDigitSum = 0;
@@ -224,21 +213,6 @@ public class ThreeCrypticSteps : MonoBehaviour {
 
         serialDigitSum = Bomb.GetSerialNumberNumbers().Sum();
         colorblindMode = ColorblindMode.ColorblindModeActive;
-
-        // Virtuallion
-        solveMarker = UnityEngine.Random.Range(52, 87);
-
-        try {
-            Component gameplayState = GameObject.Find("GameplayState(Clone)").GetComponent("GameplayState");
-            Type type = gameplayState.GetType();
-            FieldInfo fieldMission = type.GetField("MissionToLoad", BindingFlags.Public | BindingFlags.Static);
-            if (fieldMission.GetValue(gameplayState).ToString().Equals("mod_espiks_missions_virtual")) {
-                isVirtual = true;
-                Debug.LogFormat("[Three Cryptic Steps #{0}] Virtuallion detected.", moduleId);
-            }
-        }
-
-        catch (NullReferenceException) {}
     }
 
 
@@ -636,7 +610,7 @@ public class ThreeCrypticSteps : MonoBehaviour {
             submitText = GetSubmitText(name);
 
         else
-            submitText = "";
+            submitText = ""; // I might change this later
 
         Debug.LogFormat("[Three Cryptic Steps #{0}] The expected answer is: {1}", moduleId, submitText);
 
@@ -646,25 +620,6 @@ public class ThreeCrypticSteps : MonoBehaviour {
             Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.CorrectChime, transform);
             GetComponent<KMBombModule>().HandlePass();
             stage = 4;
-        }
-
-        // Specific words
-        else if (enteredText == "PASSWORD" && enteredPassword == false)
-            StartCoroutine(StageThreePassword());
-
-        else if (enteredText == "OUTBURST" && enteredOutburst == false)
-            StartCoroutine(StageThreeOutburst());
-
-        else if (enteredText == "LLABTEKSAB" && enteredBasketball == false)
-            StartCoroutine(StageThreeBasketball());
-
-        else if (enteredText == "SAMWICH" && enteredSandwhich == false) {
-            enteredSandwhich = true;
-            Audio.PlaySoundAtTransform("TCS_Samwich", transform);
-            Debug.LogFormat("[Three Cryptic Steps #{0}] You found the secret password!", moduleId);
-            ScreenText.text = "";
-            enteredText = "";
-            enteredLength = 0;
         }
 
         // Incorrect
@@ -732,100 +687,6 @@ public class ThreeCrypticSteps : MonoBehaviour {
     }
 
 
-    // Stage 3 Entered "PASSWORD"
-    private IEnumerator StageThreePassword() {
-        canPress = false;
-        enteredPassword = true;
-        Audio.PlaySoundAtTransform("TCS_Alert", transform);
-
-        Debug.LogFormat("[Three Cryptic Steps #{0}] Enter this display for Skyeward's Unfair Cipher:", moduleId);
-        Debug.LogFormat("[Three Cryptic Steps #{0}] QTRDLEGZ", moduleId);
-        Debug.LogFormat("[Three Cryptic Steps #{0}] YYWWMMCC", moduleId);
-        Debug.LogFormat("[Three Cryptic Steps #{0}] 57160152", moduleId);
-
-        yield return new WaitForSeconds(0.04f);
-        ScreenText.color = ScreenColors[1];
-        ScreenText.text = "LFA";
-        yield return new WaitForSeconds(0.25f);
-        ScreenText.text = "";
-        yield return new WaitForSeconds(0.15f);
-        ScreenText.text = "LFA";
-        yield return new WaitForSeconds(0.25f);
-        ScreenText.text = "";
-        yield return new WaitForSeconds(0.15f);
-        ScreenText.text = "LFA";
-        yield return new WaitForSeconds(0.8f);
-        ScreenText.text = "";
-        ScreenText.color = ScreenColors[8];
-        yield return new WaitForSeconds(0.15f);
-        ScreenText.text = "";
-        enteredText = "";
-        enteredLength = 0;
-        canPress = true;
-    }
-
-    // Stage 3 Entered "OUTBURST"
-    private IEnumerator StageThreeOutburst() {
-        canPress = false;
-        enteredOutburst = true;
-        ScreenText.color = ScreenColors[1];
-        ScreenText.text = "Get Ready";
-        Debug.LogFormat("[Three Cryptic Steps #{0}] I hope you have good listening ears!", moduleId);
-        yield return new WaitForSeconds(2.0f);
-        Audio.PlaySoundAtTransform("TCS_Morse", transform);
-        yield return new WaitForSeconds(110.0f);
-        ScreenText.text = "";
-        enteredText = "";
-        enteredLength = 0;
-        canPress = true;
-    }
-
-    // Stage 3 Entered "LLABTEKSAB"
-    private IEnumerator StageThreeBasketball() {
-        canPress = false;
-        enteredBasketball = true;
-        ScreenText.color = ScreenColors[1];
-        ScreenText.text = "GLMIZIE";
-        Debug.LogFormat("[Three Cryptic Steps #{0}] Don't get bamboozled by this!", moduleId);
-        Audio.PlaySoundAtTransform("TCS_BA", transform);
-        Audio.PlaySoundAtTransform("TCS_Sound1", transform);
-        yield return new WaitForSeconds(1.0f);
-        ScreenText.color = ScreenColors[4];
-        ScreenText.text = "KRXVJ";
-        Audio.PlaySoundAtTransform("TCS_Sound1", transform);
-        yield return new WaitForSeconds(1.0f);
-        ScreenText.color = ScreenColors[5];
-        ScreenText.text = "ESCPP";
-        Audio.PlaySoundAtTransform("TCS_Sound1", transform);
-        yield return new WaitForSeconds(1.0f);
-        ScreenText.color = ScreenColors[2];
-        ScreenText.text = "CD";
-        Audio.PlaySoundAtTransform("TCS_Sound1", transform);
-        yield return new WaitForSeconds(1.0f);
-        ScreenText.color = ScreenColors[8];
-        ScreenText.text = "TEEBHGOBKMN";
-        Audio.PlaySoundAtTransform("TCS_Sound1", transform);
-        yield return new WaitForSeconds(1.0f);
-        ScreenText.color = ScreenColors[3];
-        ScreenText.text = "BKQE";
-        Audio.PlaySoundAtTransform("TCS_Sound1", transform);
-        yield return new WaitForSeconds(1.0f);
-        ScreenText.color = ScreenColors[0];
-        ScreenText.text = "AOKHR";
-        Audio.PlaySoundAtTransform("TCS_Sound1", transform);
-        yield return new WaitForSeconds(1.0f);
-        ScreenText.color = ScreenColors[7];
-        ScreenText.text = "RFZBQHY";
-        Audio.PlaySoundAtTransform("TCS_Sound1", transform);
-        yield return new WaitForSeconds(1.0f);
-        Audio.PlaySoundAtTransform("TCS_Sound1", transform);
-        ScreenText.color = ScreenColors[8];
-        ScreenText.text = "";
-        enteredText = "";
-        enteredLength = 0;
-        canPress = true;
-    }
-
     // Stage 3 Strike
     private IEnumerator StageThreeStrike() {
         canPress = false;
@@ -839,20 +700,7 @@ public class ThreeCrypticSteps : MonoBehaviour {
         GetComponent<KMBombModule>().HandleStrike();
         ScreenText.text = "WRONG!";
         ScreenText.color = ScreenColors[0];
-        yield return new WaitForSeconds(0.3f);
-
-        if (moduleStrikes == 3) {
-            yield return new WaitForSeconds(0.4f);
-            ScreenText.text = "LFA";
-            ScreenText.color = ScreenColors[1];
-
-            Debug.LogFormat("[Three Cryptic Steps #{0}] Enter this display for Skyeward's Unfair Cipher:", moduleId);
-            Debug.LogFormat("[Three Cryptic Steps #{0}] QTRDLEGZ", moduleId);
-            Debug.LogFormat("[Three Cryptic Steps #{0}] YYWWMMCC", moduleId);
-            Debug.LogFormat("[Three Cryptic Steps #{0}] 57160152", moduleId);
-        }
-
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(0.6f);
         ScreenText.color = ScreenColors[0];
         ScreenText.text = "";
         enteredText = "";
@@ -1008,15 +856,8 @@ public class ThreeCrypticSteps : MonoBehaviour {
         Debug.LogFormat("[Three Cryptic Steps #{0}] Invalid button press for step one! Strike received!", moduleId);
         GetComponent<KMBombModule>().HandleStrike();
         moduleStrikes++;
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(0.6f);
 
-        if (moduleStrikes == 3) {
-            yield return new WaitForSeconds(0.4f);
-            ScreenText.text = "%10'-4\"!32'";
-            ScreenText.color = ScreenColors[1];
-        }
-
-        yield return new WaitForSeconds(0.3f);
         ScreenText.text = "Step One";
         ScreenText.color = ScreenColors[8];
         canPress = true;
@@ -1215,7 +1056,6 @@ public class ThreeCrypticSteps : MonoBehaviour {
 
                 if (validNumber > -1 && numberFound[validNumber] == false) {
                     Debug.LogFormat("[Three Cryptic Steps #{0}] You formed the number {1}.", moduleId, validNumber);
-                    allowTenMinCheck = false;
                     numberFound[validNumber] = true;
 
                     // Invalid number
@@ -1303,11 +1143,6 @@ public class ThreeCrypticSteps : MonoBehaviour {
                 canPress = true;
         }
 
-        // Shows the video with the secret password
-        else if (stage == 3 && isVirtual == true && shownPassword == false && 
-            Bomb.GetSolvedModuleNames().Count() >= solveMarker)
-                StartCoroutine(ShowPasswordVideo());
-
         for (int i = 0; i < 25; i++) {
                 string Color = Regex.Match(Keys[i].GetComponent<MeshRenderer>().material.ToString(), @"^([\w\-]+)").Value;
             if (colorblindMode && stage == 2 && canPress) {
@@ -1321,34 +1156,6 @@ public class ThreeCrypticSteps : MonoBehaviour {
                 }
             }
         }
-    }
-
-    // Shows Password Video
-    private IEnumerator ShowPasswordVideo() {
-        canPress = false;
-        shownPassword = true;
-        yield return new WaitForSeconds(1.5f);
-        Debug.LogFormat("[Three Cryptic Steps #{0}] The secret of the Virtuallion has revealed itself!", moduleId);
-        Audio.PlaySoundAtTransform("TCS_Alert", transform);
-        yield return new WaitForSeconds(0.04f);
-        ScreenText.color = ScreenColors[1];
-        ScreenText.text = "zMeIicZa8dg";
-        yield return new WaitForSeconds(0.25f);
-        ScreenText.text = "";
-        yield return new WaitForSeconds(0.15f);
-        ScreenText.text = "zMeIicZa8dg";
-        yield return new WaitForSeconds(0.25f);
-        ScreenText.text = "";
-        yield return new WaitForSeconds(0.15f);
-        ScreenText.text = "zMeIicZa8dg";
-        yield return new WaitForSeconds(5.0f);
-        ScreenText.text = "";
-        ScreenText.color = ScreenColors[8];
-        yield return new WaitForSeconds(0.15f);
-        ScreenText.text = "";
-        enteredText = "";
-        enteredLength = 0;
-        canPress = true;
     }
 
 
@@ -1436,37 +1243,6 @@ public class ThreeCrypticSteps : MonoBehaviour {
         Audio.PlaySoundAtTransform("TCS_Sound1", transform);
 
         StartCoroutine(StageThreeStart());
-    }
-
-    // Wait 10 minutes
-    private IEnumerator WaitTenMinutes() {
-        yield return new WaitForSeconds(600.0f);
-        if (allowTenMinCheck == true) {
-            canPress = false;
-            for (int i = 0; i < NumberTexts.Length; i++)
-                NumberTexts[i].text = "";
-
-            Audio.PlaySoundAtTransform("TCS_Alert", transform);
-            yield return new WaitForSeconds(0.04f);
-            ScreenText.color = ScreenColors[1];
-            ScreenText.text = "RS5";
-            yield return new WaitForSeconds(0.25f);
-            ScreenText.text = "";
-            yield return new WaitForSeconds(0.15f);
-            ScreenText.text = "RS5";
-            yield return new WaitForSeconds(0.25f);
-            ScreenText.text = "";
-            yield return new WaitForSeconds(0.15f);
-            ScreenText.text = "RS5";
-            yield return new WaitForSeconds(0.8f);
-            ScreenText.text = "";
-            ScreenText.color = ScreenColors[8];
-            yield return new WaitForSeconds(0.15f);
-            for (int i = 0; i < NumberTexts.Length; i++)
-                NumberTexts[i].text = i.ToString();
-
-            canPress = true;
-        }
     }
 
     

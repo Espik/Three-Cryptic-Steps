@@ -188,7 +188,7 @@ Prefab:
     - target: {fileID: 114848120511536268, guid: 8814ea52310d2614a9feda02ec355ae4,
         type: 2}
       propertyPath: AudioClips.Array.size
-      value: 9
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 439642, guid: 8814ea52310d2614a9feda02ec355ae4, type: 2}
       propertyPath: m_LocalPosition.x
@@ -231,12 +231,12 @@ Prefab:
         type: 2}
       propertyPath: AudioClips.Array.data[0]
       value: 
-      objectReference: {fileID: 8300000, guid: d5ca9c3daea1ee24982f6d0c48512c91, type: 3}
+      objectReference: {fileID: 8300000, guid: d4453c4531584db4c8fd8dfb71139676, type: 3}
     - target: {fileID: 114848120511536268, guid: 8814ea52310d2614a9feda02ec355ae4,
         type: 2}
       propertyPath: AudioClips.Array.data[1]
       value: 
-      objectReference: {fileID: 8300000, guid: 51bccfbb1fe34cf41b343833461e861b, type: 3}
+      objectReference: {fileID: 8300000, guid: bd639827dfd8c3c44856303902efd8f5, type: 3}
     - target: {fileID: 114848120511536268, guid: 8814ea52310d2614a9feda02ec355ae4,
         type: 2}
       propertyPath: AudioClips.Array.data[2]
@@ -313,11 +313,6 @@ Prefab:
     - target: {fileID: 4804336076344490, guid: 5365d910d998cfb4394ab011944399cf, type: 2}
       propertyPath: m_RootOrder
       value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 114697163159862990, guid: 5365d910d998cfb4394ab011944399cf,
-        type: 2}
-      propertyPath: _colorblindMode
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 5365d910d998cfb4394ab011944399cf, type: 2}
