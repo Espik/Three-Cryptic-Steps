@@ -79,6 +79,8 @@ public class ThreeCrypticSteps : MonoBehaviour {
     private readonly int[] group7 = { 10, 11, 12, 15, 16, 17, 20, 21, 22 };
     private readonly int[] group8 = { 5, 6, 7, 10, 11, 12, 15, 16, 17 };
 
+    private readonly int[][] groupColors = new int[8][];
+
     // Stage 2 Number Configuations
     private readonly int[] number0 = { 0, 1, 2, 3, 4, 5, 9, 10, 14, 15, 19, 20, 21, 22, 23, 24 };
     private readonly int[] number1 = { 2, 7, 12, 17, 22 };
@@ -213,6 +215,17 @@ public class ThreeCrypticSteps : MonoBehaviour {
 
         serialDigitSum = Bomb.GetSerialNumberNumbers().Sum();
         colorblindMode = ColorblindMode.ColorblindModeActive;
+
+
+        // Makes Stage 2 have Consistent RNG
+        for (int i = 0; i < 8; i++) {
+            groupColors[i] = new int[9];
+
+            for (int j = 0; j < 9; j++) {
+                int rand = UnityEngine.Random.Range(0, 6);
+                groupColors[i][j] = rand;
+            }
+        }
     }
 
 
@@ -750,72 +763,64 @@ public class ThreeCrypticSteps : MonoBehaviour {
 
         Audio.PlaySoundAtTransform("TCS_Group", transform);
         for (int i = 0; i < group1.Length; i++) {
-            int rand = UnityEngine.Random.Range(0, 6);
-            KeyModels[group1[i]].material = KeyMaterials[rand];
-            keyState[group1[i]] = rand;
+            KeyModels[group1[i]].material = KeyMaterials[groupColors[0][i]];
+            keyState[group1[i]] = groupColors[0][i];
             if (colorblindMode == true) KeyTexts[group1[i]].text = colorblindLetters[keyState[group1[i]]];
         }
 
         yield return new WaitForSeconds(0.3f);
         Audio.PlaySoundAtTransform("TCS_Group", transform);
         for (int i = 0; i < group2.Length; i++) {
-            int rand = UnityEngine.Random.Range(0, 6);
-            KeyModels[group2[i]].material = KeyMaterials[rand];
-            keyState[group2[i]] = rand;
+            KeyModels[group2[i]].material = KeyMaterials[groupColors[1][i]];
+            keyState[group2[i]] = groupColors[1][i];
             if (colorblindMode == true) KeyTexts[group2[i]].text = colorblindLetters[keyState[group2[i]]];
         }
 
         yield return new WaitForSeconds(0.3f);
         Audio.PlaySoundAtTransform("TCS_Group", transform);
         for (int i = 0; i < group3.Length; i++) {
-            int rand = UnityEngine.Random.Range(0, 6);
-            KeyModels[group3[i]].material = KeyMaterials[rand];
-            keyState[group3[i]] = rand;
+            KeyModels[group3[i]].material = KeyMaterials[groupColors[2][i]];
+            keyState[group3[i]] = groupColors[2][i];
             if (colorblindMode == true) KeyTexts[group3[i]].text = colorblindLetters[keyState[group3[i]]];
         }
 
         yield return new WaitForSeconds(0.3f);
         Audio.PlaySoundAtTransform("TCS_Group", transform);
         for (int i = 0; i < group4.Length; i++) {
-            int rand = UnityEngine.Random.Range(0, 6);
-            KeyModels[group4[i]].material = KeyMaterials[rand];
-            keyState[group4[i]] = rand;
+            KeyModels[group4[i]].material = KeyMaterials[groupColors[3][i]];
+            keyState[group4[i]] = groupColors[3][i];
             if (colorblindMode == true) KeyTexts[group4[i]].text = colorblindLetters[keyState[group4[i]]];
         }
 
         yield return new WaitForSeconds(0.3f);
         Audio.PlaySoundAtTransform("TCS_Group", transform);
         for (int i = 0; i < group5.Length; i++) {
-            int rand = UnityEngine.Random.Range(0, 6);
-            KeyModels[group5[i]].material = KeyMaterials[rand];
-            keyState[group5[i]] = rand;
+            KeyModels[group5[i]].material = KeyMaterials[groupColors[4][i]];
+            keyState[group5[i]] = groupColors[4][i];
             if (colorblindMode == true) KeyTexts[group5[i]].text = colorblindLetters[keyState[group5[i]]];
         }
 
         yield return new WaitForSeconds(0.3f);
         Audio.PlaySoundAtTransform("TCS_Group", transform);
         for (int i = 0; i < group6.Length; i++) {
-            int rand = UnityEngine.Random.Range(0, 6);
-            KeyModels[group6[i]].material = KeyMaterials[rand];
-            keyState[group6[i]] = rand;
+            KeyModels[group6[i]].material = KeyMaterials[groupColors[5][i]];
+            keyState[group6[i]] = groupColors[5][i];
             if (colorblindMode == true) KeyTexts[group6[i]].text = colorblindLetters[keyState[group6[i]]];
         }
 
         yield return new WaitForSeconds(0.3f);
         Audio.PlaySoundAtTransform("TCS_Group", transform);
         for (int i = 0; i < group7.Length; i++) {
-            int rand = UnityEngine.Random.Range(0, 6);
-            KeyModels[group7[i]].material = KeyMaterials[rand];
-            keyState[group7[i]] = rand;
+            KeyModels[group7[i]].material = KeyMaterials[groupColors[6][i]];
+            keyState[group7[i]] = groupColors[6][i];
             if (colorblindMode == true) KeyTexts[group7[i]].text = colorblindLetters[keyState[group7[i]]];
         }
 
         yield return new WaitForSeconds(0.3f);
         Audio.PlaySoundAtTransform("TCS_Group", transform);
         for (int i = 0; i < group8.Length; i++) {
-            int rand = UnityEngine.Random.Range(0, 6);
-            KeyModels[group8[i]].material = KeyMaterials[rand];
-            keyState[group8[i]] = rand;
+            KeyModels[group8[i]].material = KeyMaterials[groupColors[7][i]];
+            keyState[group8[i]] = groupColors[7][i];
             if (colorblindMode == true) KeyTexts[group8[i]].text = colorblindLetters[keyState[group8[i]]];
         }
 
